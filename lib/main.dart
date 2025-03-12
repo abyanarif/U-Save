@@ -1,9 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
-const double buttonRadius = 15.0;
+const double buttonRadius = 15;
 const double tebalBorder = 2;
 const double buttonWidth = 200;
 
@@ -34,13 +31,13 @@ class _MyWidgetState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Color(0xFF5159B0),
+        backgroundColor: Color(0xFF6993F5),
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(100.0),
           child: ClipRRect(
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
               child: AppBar(
-                  backgroundColor: Color(0xFF8F8DFF),
+                  backgroundColor: Color(0xD5E5FBFF),
                   title: SizedBox(
                       child: Padding(
                     padding: const EdgeInsets.only(top: 50.0, bottom: 50.0),
@@ -57,7 +54,7 @@ class _MyWidgetState extends State<MyApp> {
                         Text(
                           'Mari Belajar',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 35,
                               fontFamily: 'Montserrat'),
                         ),
@@ -135,17 +132,17 @@ class Literasi extends StatelessWidget {
                   width: buttonWidth,
                   child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Pengertian'),
                       style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
                               horizontal: 30, vertical: 10),
                           minimumSize: Size(100, 50),
                           backgroundColor: Colors.white,
-                          foregroundColor: Color(0xFF5159B0),
+                          foregroundColor: Color(0xFF6993F5),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(buttonRadius),
                               side: BorderSide(
-                                  color: Colors.black26, width: tebalBorder)))),
+                                  color: Colors.black26, width: tebalBorder))),
+                      child: Text('Pengertian')),
                 ))),
         Positioned(
             top: 150,
@@ -157,17 +154,17 @@ class Literasi extends StatelessWidget {
                 width: buttonWidth,
                 child: ElevatedButton(
                     onPressed: () {},
-                    child: Text('Tujuan'),
                     style: ElevatedButton.styleFrom(
                         padding:
                             EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                         minimumSize: Size(100, 50),
-                        backgroundColor: Color(0xFF5159B0),
+                        backgroundColor: Color(0xFF6993F5),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(buttonRadius),
                             side: BorderSide(
-                                color: Colors.black26, width: tebalBorder)))),
+                                color: Colors.black26, width: tebalBorder))),
+                    child: Text('Tujuan')),
               ),
             )),
         Positioned(
@@ -180,17 +177,17 @@ class Literasi extends StatelessWidget {
                 width: buttonWidth,
                 child: ElevatedButton(
                     onPressed: () {},
-                    child: Text('Manfaat'),
                     style: ElevatedButton.styleFrom(
                         padding:
                             EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                         minimumSize: Size(100, 50),
                         backgroundColor: Colors.white,
-                        foregroundColor: Color(0xFF5159B0),
+                        foregroundColor: Color(0xFF6993F5),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(buttonRadius),
                             side: BorderSide(
-                                color: Colors.black26, width: tebalBorder)))),
+                                color: Colors.black26, width: tebalBorder))),
+                    child: Text('Manfaat')),
               ),
             )),
         Positioned(
@@ -203,17 +200,17 @@ class Literasi extends StatelessWidget {
                 width: buttonWidth,
                 child: ElevatedButton(
                     onPressed: () {},
-                    child: Text('Dampak'),
                     style: ElevatedButton.styleFrom(
                         padding:
                             EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                         minimumSize: Size(100, 50),
-                        backgroundColor: Color(0xFF5159B0),
+                        backgroundColor: Color(0xFF6993F5),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(buttonRadius),
                             side: BorderSide(
-                                color: Colors.black26, width: tebalBorder)))),
+                                color: Colors.black26, width: tebalBorder))),
+                    child: Text('Dampak')),
               ),
             )),
         Positioned(
@@ -226,17 +223,17 @@ class Literasi extends StatelessWidget {
                 width: buttonWidth,
                 child: ElevatedButton(
                     onPressed: () {},
-                    child: Text('Mengatasi Dampak'),
                     style: ElevatedButton.styleFrom(
                         padding:
                             EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                         minimumSize: Size(100, 50),
                         backgroundColor: Colors.white,
-                        foregroundColor: Color(0xFF5159B0),
+                        foregroundColor: Color(0xFF6993F5),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(buttonRadius),
                             side: BorderSide(
-                                color: Colors.black26, width: tebalBorder)))),
+                                color: Colors.black26, width: tebalBorder))),
+                    child: Text('Mengatasi Dampak')),
               ),
             )),
       ],
@@ -250,14 +247,65 @@ class Budgeting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Positioned(
-          child: Align(
-        alignment: Alignment.center,
-        child: SizedBox(
-          width: buttonWidth,
-          child: ElevatedButton(onPressed: () {}, child: Text('Buat Baru')),
-        ),
-      ))
+      Column(
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Text('BUDGET',
+              style: TextStyle(
+                  color: Colors.white, fontFamily: 'Montserrat', fontSize: 25)),
+          SizedBox(
+            height: 20,
+          ),
+          Positioned(
+              child: Align(
+            alignment: Alignment.center,
+            child: SizedBox(
+              width: buttonWidth,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(buttonRadius)),
+                    side: BorderSide(color: Colors.black26, width: tebalBorder),
+                    backgroundColor: Color(0xFF6993F5),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 20)),
+                child: Text(
+                  'Buat Baru',
+                  style: TextStyle(fontSize: 30, fontFamily: 'Montserrat'),
+                ),
+              ),
+            ),
+          )),
+          SizedBox(
+            width: 10,
+            height: 30,
+          ),
+          Positioned(
+              child: Align(
+            alignment: Alignment.center,
+            child: SizedBox(
+              width: buttonWidth,
+              child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(buttonRadius)),
+                      side:
+                          BorderSide(color: Colors.black26, width: tebalBorder),
+                      backgroundColor: Color(0xFF6993F5),
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 20)),
+                  child: Text(
+                    'Cek',
+                    style: TextStyle(fontSize: 30, fontFamily: 'Montserrat'),
+                  )),
+            ),
+          ))
+        ],
+      )
     ]);
   }
 }
@@ -267,8 +315,96 @@ class InputTransaksi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-        children: [Center(child: Text('Ini adalah halaman Input Transaksi!'))]);
+    final List<String> categories = [
+      "Makanan",
+      "Belanja",
+      "Pakaian",
+      "Olahraga",
+      "Minuman",
+      "Hiburan",
+      "Tempat Tinggal",
+      "Kecantikan",
+      "Pendidikan",
+      "Transportasi",
+      "Internet",
+      "Lainnya",
+    ];
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
+                  child: Text(
+                    "Pengeluaran",
+                    style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 20,
+                        color: Color(0xFF6993F5)),
+                  ),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
+                  child: Text(
+                    "Pemasukan",
+                    style: TextStyle(fontFamily: 'Montserrat', fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        Expanded(
+          child: GridView.builder(
+            padding: EdgeInsets.all(10),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 1.5,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              return _buildCategoryButton(categories[index]);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryButton(String text) {
+    return ElevatedButton(
+      onPressed: () {},
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.symmetric(vertical: 15),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(fontFamily: 'Montserrat', fontSize: 16),
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 }
 
