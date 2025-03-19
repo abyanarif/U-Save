@@ -1,4 +1,10 @@
+import 'package:aplikasi2/Asuransi.dart';
 import 'package:flutter/material.dart';
+import 'Pemahaman_Dasar.dart';
+import 'TabungandanPinjaman.dart';
+import 'Investasi.dart';
+import 'Asuransi.dart';
+import 'Perencanaan_Keuangan.dart';
 
 class Literasi extends StatelessWidget {
   const Literasi({super.key});
@@ -36,7 +42,12 @@ class Literasi extends StatelessWidget {
             child: SizedBox(
               width: buttonWidth,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Pemahaman_Dasar()));
+                },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   minimumSize: Size(100, 50),
@@ -47,7 +58,7 @@ class Literasi extends StatelessWidget {
                     side: BorderSide(color: Colors.black26, width: tebalBorder),
                   ),
                 ),
-                child: Text('Pengertian'),
+                child: Text('Pemahaman Dasar Keuangan Pribadai'),
               ),
             ),
           ),
@@ -61,7 +72,12 @@ class Literasi extends StatelessWidget {
             child: SizedBox(
               width: buttonWidth,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TabungandanPinjaman()));
+                },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   minimumSize: Size(100, 50),
@@ -72,7 +88,7 @@ class Literasi extends StatelessWidget {
                     side: BorderSide(color: Colors.black26, width: tebalBorder),
                   ),
                 ),
-                child: Text('Tujuan'),
+                child: Text('Tabungan dan Pinjaman'),
               ),
             ),
           ),
@@ -86,7 +102,10 @@ class Literasi extends StatelessWidget {
             child: SizedBox(
               width: buttonWidth,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Investasi()));
+                },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   minimumSize: Size(100, 50),
@@ -97,7 +116,7 @@ class Literasi extends StatelessWidget {
                     side: BorderSide(color: Colors.black26, width: tebalBorder),
                   ),
                 ),
-                child: Text('Manfaat'),
+                child: Text('Investasi'),
               ),
             ),
           ),
@@ -111,7 +130,10 @@ class Literasi extends StatelessWidget {
             child: SizedBox(
               width: buttonWidth,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Asuransi()));
+                },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   minimumSize: Size(100, 50),
@@ -122,7 +144,7 @@ class Literasi extends StatelessWidget {
                     side: BorderSide(color: Colors.black26, width: tebalBorder),
                   ),
                 ),
-                child: Text('Dampak'),
+                child: Text('Asuransi'),
               ),
             ),
           ),
@@ -136,7 +158,12 @@ class Literasi extends StatelessWidget {
             child: SizedBox(
               width: buttonWidth,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Perencanaan_Keuangan()));
+                },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   minimumSize: Size(100, 50),
@@ -147,7 +174,7 @@ class Literasi extends StatelessWidget {
                     side: BorderSide(color: Colors.black26, width: tebalBorder),
                   ),
                 ),
-                child: Text('Mengatasi Dampak'),
+                child: Text('Perencanaan Keuangan Jangka Panjang'),
               ),
             ),
           ),

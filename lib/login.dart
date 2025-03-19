@@ -1,3 +1,4 @@
+import 'package:aplikasi2/home_page.dart';
 import 'package:flutter/material.dart';
 import 'signup.dart';
 
@@ -138,7 +139,10 @@ class _LoginPageState extends State<Login> {
                           padding: const EdgeInsets.symmetric(vertical: 20),
                         ),
                         onPressed: () {
-                          // aksi login
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()));
                         },
                         child: const Text(
                           "Log In",

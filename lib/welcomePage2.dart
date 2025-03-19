@@ -59,10 +59,9 @@ class WelcomePage2 extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => WelcomePage3()),
-                            );
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WelcomePage3()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
