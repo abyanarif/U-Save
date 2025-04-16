@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'literasi.dart';
+import 'Literasi.dart';
 import 'budgeting.dart';
-import 'inputTransaksi.dart';
 import 'mutasiTransaksi.dart';
 import 'informasiAkun.dart';
 
@@ -26,36 +25,39 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return Scaffold(
       backgroundColor: Color(0xFF6993F5),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100.0),
+        preferredSize: Size.fromHeight(100),
         child: ClipRRect(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
           child: AppBar(
             backgroundColor: Color(0xD5E5FBFF),
-            title: SizedBox(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 50.0, bottom: 50.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'U-Save',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontFamily: 'Montserrat',
-                      ),
-                    ),
-                    Text(
-                      'Mari Belajar',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 35,
-                        fontFamily: 'Montserrat',
-                      ),
-                    ),
-                  ],
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () => Navigator.of(context).maybePop(),
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '\nU-Save!',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Montserrat',
+                  ),
                 ),
-              ),
+                SizedBox(height: 4),
+                Text(
+                  'Smart Budget, Smart Life',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontFamily: 'Montserrat',
+                  ),
+                ),
+                SizedBox(height: 8),
+              ],
             ),
           ),
         ),
@@ -70,7 +72,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
         children: [
           Literasi(),
           Budgeting(),
-          InputTransaksi(),
           MutasiTransaksi(),
           InformasiAkun(),
         ],
@@ -80,7 +81,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.book), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.event_note), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.add_circle), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.wallet_rounded), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
         ],
