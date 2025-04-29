@@ -1,6 +1,7 @@
 import 'package:aplikasi2/home_page.dart';
+import 'package:aplikasi2/signup.dart';
 import 'package:flutter/material.dart';
-import 'signup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -18,6 +19,41 @@ class _LoginPageState extends State<Login> {
     usernameController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> login() async {
+    String email = usernameController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email dan password harus diisi.')),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      String message = '';
+      if (e.code == 'user-not-found') {
+        message = 'User tidak ditemukan.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Password salah.';
+      } else {
+        message = 'Terjadi kesalahan. (${e.message})';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
   }
 
   @override
@@ -38,7 +74,6 @@ class _LoginPageState extends State<Login> {
             IconButton(
               icon: const Icon(Icons.arrow_back, size: 30),
               onPressed: () {
-                // aksi tombol back
                 Navigator.pop(context);
               },
             ),
@@ -79,6 +114,7 @@ class _LoginPageState extends State<Login> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF3F51B5),
+                        fontSize: 24,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -92,7 +128,7 @@ class _LoginPageState extends State<Login> {
                         controller: usernameController,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.person, color: Colors.black87),
-                          hintText: 'Username',
+                          hintText: 'Email',
                           hintStyle: TextStyle(color: Colors.black54),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(vertical: 20),
@@ -138,12 +174,7 @@ class _LoginPageState extends State<Login> {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 20),
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage()));
-                        },
+                        onPressed: login,
                         child: const Text(
                           "Log In",
                           style: TextStyle(fontSize: 16, color: Colors.white),

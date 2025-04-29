@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Tambah ini buat Firebase
+import 'login.dart'; // pastikan file login.dart sudah ada
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);
@@ -15,6 +16,9 @@ class _SignUpState extends State<Signup> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
+  final FirebaseAuth _auth =
+      FirebaseAuth.instance; // inisialisasi firebase auth
+
   @override
   void dispose() {
     usernameController.dispose();
@@ -22,6 +26,33 @@ class _SignUpState extends State<Signup> {
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _signUp() async {
+    if (passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match")),
+      );
+      return;
+    }
+
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Account created successfully!")),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Login()),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Signup failed")),
+      );
+    }
   }
 
   @override
@@ -67,7 +98,6 @@ class _SignUpState extends State<Signup> {
             ),
             const SizedBox(height: 40),
             Expanded(
-              // Supaya bisa scroll kalau keyboard muncul
               child: SingleChildScrollView(
                 child: Center(
                   child: Container(
@@ -123,10 +153,7 @@ class _SignUpState extends State<Signup> {
                               ),
                               padding: const EdgeInsets.symmetric(vertical: 20),
                             ),
-                            onPressed: () {
-                              // TODO: Aksi create account
-                              print('Account Created');
-                            },
+                            onPressed: _signUp,
                             child: const Text(
                               "Create Account",
                               style: TextStyle(fontSize: 16),
