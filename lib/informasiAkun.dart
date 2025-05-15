@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class InformasiAkun extends StatefulWidget {
+  const InformasiAkun({super.key});
+
   @override
   _InformasiAkunState createState() => _InformasiAkunState();
 }
@@ -114,10 +116,10 @@ class FieldProfile extends StatelessWidget {
   final String text;
 
   const FieldProfile({
-    Key? key,
+    super.key,
     required this.icon,
     required this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

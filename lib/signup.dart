@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart'; // Tambah ini buat Firebase
 import 'login.dart'; // pastikan file login.dart sudah ada
 
 class Signup extends StatefulWidget {
-  const Signup({Key? key}) : super(key: key);
+  const Signup({super.key});
 
   @override
   State<Signup> createState() => _SignUpState();

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:aplikasi2/Literasi.dart';
 
 class Perencanaan_Keuangan extends StatelessWidget {
+  const Perencanaan_Keuangan({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

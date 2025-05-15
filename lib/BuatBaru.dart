@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'Cek.dart';
 
 class BuatBaru extends StatefulWidget {
+  const BuatBaru({super.key});
+
   @override
   _BuatBaruState createState() => _BuatBaruState();
 }
 
 class _BuatBaruState extends State<BuatBaru> {
-  TextEditingController _uangSakuController = TextEditingController();
+  final TextEditingController _uangSakuController = TextEditingController();
   String _selectedCity = "Pilih Kota";
   List<String> cities = [
     "Surabaya",

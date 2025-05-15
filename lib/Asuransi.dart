@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:aplikasi2/Literasi.dart';
 
 class Asuransi extends StatelessWidget {
+  const Asuransi({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

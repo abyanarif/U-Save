@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MutasiTransaksi extends StatefulWidget {
+  const MutasiTransaksi({super.key});
+
   @override
   _MutasiTransaksiPageState createState() => _MutasiTransaksiPageState();
 }

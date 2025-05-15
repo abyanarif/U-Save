@@ -7,6 +7,7 @@ class Cek extends StatelessWidget {
   final Map<String, int> tambahanPengeluaran;
 
   Cek({
+    super.key,
     required this.uangSaku,
     required this.selectedCity,
     required this.selectedCategories,
@@ -96,7 +97,7 @@ class BudgetCard extends StatelessWidget {
   final String title;
   final int amount;
 
-  BudgetCard({required this.title, required this.amount});
+  const BudgetCard({super.key, required this.title, required this.amount});
 
   @override
   Widget build(BuildContext context) {

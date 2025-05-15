@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:aplikasi2/Literasi.dart';
 
 class Pemahaman_Dasar extends StatelessWidget {
+  const Pemahaman_Dasar({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
