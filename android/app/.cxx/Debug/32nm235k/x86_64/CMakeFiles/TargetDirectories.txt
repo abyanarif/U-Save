@@ -1,0 +1,2 @@
+C:/U-Save-Mobile/U-Save/android/app/.cxx/Debug/32nm235k/x86_64/CMakeFiles/edit_cache.dir
+C:/U-Save-Mobile/U-Save/android/app/.cxx/Debug/32nm235k/x86_64/CMakeFiles/rebuild_cache.dir

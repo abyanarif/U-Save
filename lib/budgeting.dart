@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:aplikasi2/riwayat.dart';
 import 'BuatBaru.dart';
 import 'Cek.dart';
+import 'BudgetCard.dart';
 
 class Budgeting extends StatelessWidget {
   const Budgeting({super.key});
@@ -12,14 +14,13 @@ class Budgeting extends StatelessWidget {
     const double buttonWidth = 250;
 
     return Scaffold(
-      backgroundColor: Color(0xFF6993F5),
+      backgroundColor: const Color(0xFF6993F5),
       body: Padding(
-        padding: const EdgeInsets.only(
-            top: 40, left: 80), // Menggeser teks Budget ke atas
+        padding: const EdgeInsets.only(top: 40, left: 80),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               'BUDGETING',
               style: TextStyle(
                 color: Colors.white,
@@ -28,25 +29,28 @@ class Budgeting extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             SizedBox(
               width: buttonWidth,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => BuatBaru()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const BuatBaru()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(buttonRadius),
                   ),
-                  side: BorderSide(color: Colors.black26, width: tebalBorder),
-                  backgroundColor: Color(0xFF6993F5),
+                  side: const BorderSide(
+                      color: Colors.black26, width: tebalBorder),
+                  backgroundColor: const Color(0xFF6993F5),
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
                   elevation: 5,
                 ),
-                child: Text(
+                child: const Text(
                   'Buat Baru',
                   style: TextStyle(
                     fontSize: 26,
@@ -56,33 +60,31 @@ class Budgeting extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             SizedBox(
               width: buttonWidth,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Cek(
-                                uangSaku: 0,
-                                selectedCity: '',
-                                selectedCategories: [],
-                                tambahanPengeluaran: {},
-                              )));
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RiwayatTerakhir(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(buttonRadius),
                   ),
-                  side: BorderSide(color: Colors.black26, width: tebalBorder),
+                  side: const BorderSide(
+                      color: Colors.black26, width: tebalBorder),
                   backgroundColor: Colors.white,
-                  foregroundColor: Color(0xFF6993F5),
-                  padding: EdgeInsets.symmetric(vertical: 20),
+                  foregroundColor: const Color(0xFF6993F5),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
                   elevation: 5,
                 ),
-                child: Text(
-                  'Cek',
+                child: const Text(
+                  'Riwayat Terakhir',
                   style: TextStyle(
                     fontSize: 26,
                     fontFamily: 'Montserrat',

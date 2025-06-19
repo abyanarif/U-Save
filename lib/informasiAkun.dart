@@ -1,4 +1,6 @@
+import 'package:aplikasi2/login.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class InformasiAkun extends StatefulWidget {
   const InformasiAkun({super.key});
@@ -8,124 +10,252 @@ class InformasiAkun extends StatefulWidget {
 }
 
 class _InformasiAkunState extends State<InformasiAkun> {
-  bool editUniversitas = false; // Status apakah lagi edit atau nggak
-  String universitas = ''; // Nilai default universitas
-  TextEditingController universitasController = TextEditingController();
+  bool _isEditingUniversitas = false;
+  String _universitas = 'Universitas';
+  late final TextEditingController _universitasController;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isLoggingOut = false;
+  User? _user;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFF6993F5),
-      body: Column(
-        children: [
-          SizedBox(height: 40),
+  void initState() {
+    super.initState();
+    _universitasController = TextEditingController();
+    _user = _auth.currentUser;
+  }
 
-          // Username
-          FieldProfile(icon: Icons.person, text: 'abyan1132'),
+  @override
+  void dispose() {
+    _universitasController.dispose();
+    super.dispose();
+  }
 
-          SizedBox(height: 15),
+  Future<void> _logout() async {
+    setState(() => _isLoggingOut = true);
+    try {
+      await _auth.signOut();
+      if (mounted) {
 
-          // Email
-          FieldProfile(icon: Icons.email, text: 'a***23@gmail.com'),
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const Login()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal logout: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoggingOut = false);
+      }
+    }
+  }
 
-          SizedBox(height: 15),
-
-          // Password
-          FieldProfile(icon: Icons.lock, text: 'a***********'),
-
-          SizedBox(height: 15),
-
-          // Universitas (editable)
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                editUniversitas = true;
-                universitasController.text = universitas; // Pre-fill
-              });
-            },
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 25),
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.account_balance, size: 25),
-                  SizedBox(width: 15),
-                  Expanded(
-                    child: editUniversitas
-                        ? TextField(
-                            controller: universitasController,
-                            autofocus: true,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Masukkan Universitas',
-                            ),
-                            onSubmitted: (value) {
-                              setState(() {
-                                universitas =
-                                    value.isNotEmpty ? value : 'Universitas';
-                                editUniversitas = false;
-                              });
-                            },
-                          )
-                        : Text(
-                            universitas,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'Montserrat',
-                              color: universitas == 'Universitas'
-                                  ? Colors.grey
-                                  : Colors.black,
-                            ),
-                          ),
-                  ),
-                ],
-              ),
-            ),
+  void _confirmLogout() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Konfirmasi Logout'),
+        content: const Text('Anda yakin ingin keluar dari akun ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
           ),
-
-          SizedBox(height: 40),
-
-          GestureDetector(
-            onTap: () {
-              // Aksi log out
-              Navigator.pop(context);
-            },
-            child: Text(
-              'Log Out',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                fontFamily: 'Montserrat',
-                color: Colors.black,
-              ),
-            ),
+          TextButton(
+            onPressed: _logout,
+            child: _isLoggingOut
+                ? const CircularProgressIndicator()
+                : const Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.red),
+                  ),
           ),
         ],
       ),
     );
   }
+
+  void _saveUniversitas() {
+    if (_universitasController.text.trim().length >= 3) {
+      setState(() {
+        _universitas = _universitasController.text.trim();
+        _isEditingUniversitas = false;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Masukkan nama universitas')),
+      );
+    }
+  }
+
+  void _cancelEditing() {
+    setState(() => _isEditingUniversitas = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final email = _user?.email ?? 'Email tidak tersedia';
+    final displayName = _user?.displayName ?? 'Nama pengguna tidak tersedia';
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF6993F5),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+
+              // Display Username
+              FieldProfile(
+                icon: Icons.person,
+                text: displayName,
+                isSensitive: false,
+              ),
+
+              const SizedBox(height: 15),
+
+              // Email
+              FieldProfile(
+                icon: Icons.email,
+                text: email,
+                isSensitive: false,
+              ),
+
+              const SizedBox(height: 15),
+
+              // Universitas
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 25),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: _isEditingUniversitas
+                    ? Column(
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.account_balance, size: 25),
+                              const SizedBox(width: 15),
+                              Expanded(
+                                child: TextField(
+                                  controller: _universitasController,
+                                  autofocus: true,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Masukkan Universitas',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: _cancelEditing,
+                                child: const Text('Batal'),
+                              ),
+                              const SizedBox(width: 10),
+                              ElevatedButton(
+                                onPressed: _saveUniversitas,
+                                child: const Text('Simpan'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    : InkWell(
+                        borderRadius: BorderRadius.circular(25),
+                        onTap: () {
+                          setState(() {
+                            _isEditingUniversitas = true;
+                            _universitasController.text = _universitas;
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            const Icon(Icons.account_balance, size: 25),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: Text(
+                                _universitas,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Montserrat',
+                                  color: _universitas == 'Universitas'
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
+                              ),
+                            ),
+                            const Icon(Icons.edit,
+                                size: 18, color: Colors.grey),
+                          ],
+                        ),
+                      ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Tombol Logout
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: ElevatedButton.icon(
+                  onPressed: _confirmLogout,
+                  icon: const Icon(Icons.logout, color: Colors.red),
+                  label: const Text(
+                    'Log Out',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      fontFamily: 'Montserrat',
+                      color: Colors.red,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    elevation: 2,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-// Widget reusable buat field profile biasa (non-editable)
 class FieldProfile extends StatelessWidget {
   final IconData icon;
   final String text;
+  final bool isSensitive;
 
   const FieldProfile({
     super.key,
     required this.icon,
     required this.text,
+    this.isSensitive = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 25),
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      margin: const EdgeInsets.symmetric(horizontal: 25),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
@@ -133,11 +263,11 @@ class FieldProfile extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, size: 25),
-          SizedBox(width: 15),
+          const SizedBox(width: 15),
           Expanded(
             child: Text(
-              text,
-              style: TextStyle(
+              isSensitive ? _maskSensitiveInfo(text) : text,
+              style: const TextStyle(
                 fontSize: 16,
                 fontFamily: 'Montserrat',
               ),
@@ -146,5 +276,22 @@ class FieldProfile extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _maskSensitiveInfo(String text) {
+    if (text.isEmpty) return text;
+    if (text.contains('@')) {
+      // Mask email
+      final parts = text.split('@');
+      if (parts.length != 2) return text;
+      final name = parts[0];
+      final domain = parts[1];
+      if (name.isEmpty) return text;
+      return '${name[0]}***${name.length > 1 ? name.substring(name.length - 1) : ''}@$domain';
+    } else {
+      // Mask username
+      if (text.length <= 2) return '${text[0]}***';
+      return '${text[0]}***${text.substring(text.length - 2)}';
+    }
   }
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class MutasiTransaksi extends StatefulWidget {
   const MutasiTransaksi({super.key});
@@ -18,6 +21,8 @@ class _MutasiTransaksiPageState extends State<MutasiTransaksi> {
   String? _kategoriDipilih;
   int? _nominal;
 
+  final currencyFormatter = NumberFormat.decimalPattern('id_ID');
+
   final pemasukanKategori = ['Gaji', 'Uang Saku', 'Lainnya'];
   final pengeluaranKategori = [
     'Makan',
@@ -35,6 +40,12 @@ class _MutasiTransaksiPageState extends State<MutasiTransaksi> {
     'Lainnya'
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadTransaksi();
+  }
+
   void hitungTotal() {
     pemasukan = transaksiList
         .where((t) => t.jenis == JenisTransaksi.pemasukan)
@@ -44,23 +55,73 @@ class _MutasiTransaksiPageState extends State<MutasiTransaksi> {
         .fold(0, (sum, item) => sum + item.nominal);
   }
 
-  void tambahTransaksi() {
+  void tambahTransaksi() async {
     if (_jenisDipilih != null && _kategoriDipilih != null && _nominal != null) {
       final newTransaksi = Transaksi(
-        tanggal:
-            '${DateTime.now().day.toString().padLeft(2, '0')}/${DateTime.now().month.toString().padLeft(2, '0')}',
+        tanggal: DateFormat('dd/MM').format(DateTime.now()),
         nominal: _nominal!,
         jenis: _jenisDipilih!,
         kategori: _kategoriDipilih!,
       );
-      setState(() {
-        transaksiList.add(newTransaksi);
-        hitungTotal();
-        _nominal = null;
-        _kategoriDipilih = null;
-        _jenisDipilih = null;
-      });
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      final transaksiData = {
+        'tanggal': newTransaksi.tanggal,
+        'nominal': newTransaksi.nominal,
+        'jenis': newTransaksi.jenis.name,
+        'kategori': newTransaksi.kategori,
+        'createdAt': FieldValue.serverTimestamp(),
+      };
+
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('transaksi')
+            .add(transaksiData);
+
+        setState(() {
+          transaksiList.insert(0, newTransaksi); // paling baru di atas
+          hitungTotal();
+          _nominal = null;
+          _kategoriDipilih = null;
+          _jenisDipilih = null;
+        });
+      } catch (e) {
+        print('Error saat menyimpan transaksi: $e');
+      }
     }
+  }
+
+  void _loadTransaksi() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('transaksi')
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    final List<Transaksi> loadedTransaksi = snapshot.docs.map((doc) {
+      final data = doc.data();
+      return Transaksi(
+        tanggal: data['tanggal'] ?? '',
+        nominal: data['nominal'] ?? 0,
+        jenis: data['jenis'] == 'pemasukan'
+            ? JenisTransaksi.pemasukan
+            : JenisTransaksi.pengeluaran,
+        kategori: data['kategori'] ?? '',
+      );
+    }).toList();
+
+    setState(() {
+      transaksiList = loadedTransaksi;
+      hitungTotal();
+    });
   }
 
   @override
@@ -76,7 +137,7 @@ class _MutasiTransaksiPageState extends State<MutasiTransaksi> {
               SizedBox(height: 20),
               Text('Sisa Uang Sekarang',
                   style: TextStyle(color: Colors.white, fontSize: 16)),
-              Text('Rp. $saldo',
+              Text('Rp. ${currencyFormatter.format(saldo)}',
                   style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -126,7 +187,8 @@ class _MutasiTransaksiPageState extends State<MutasiTransaksi> {
                               ? 'Pemasukan'
                               : 'Pengeluaran'),
                           Text(transaksi.tanggal),
-                          Text('Rp. ${transaksi.nominal}',
+                          Text(
+                              'Rp. ${currencyFormatter.format(transaksi.nominal)}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ],
                       ),
@@ -230,7 +292,7 @@ class _MutasiTransaksiPageState extends State<MutasiTransaksi> {
             ],
           ),
           SizedBox(height: 4),
-          Text('Rp. $nominal'),
+          Text('Rp. ${currencyFormatter.format(nominal)}'),
         ],
       ),
     );

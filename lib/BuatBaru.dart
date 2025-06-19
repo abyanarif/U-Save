@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart'; // import intl
 import 'Cek.dart';
 
 class BuatBaru extends StatefulWidget {
@@ -10,22 +12,76 @@ class BuatBaru extends StatefulWidget {
 
 class _BuatBaruState extends State<BuatBaru> {
   final TextEditingController _uangSakuController = TextEditingController();
+  final formatter =
+      NumberFormat('#,###', 'id_ID'); // formatter untuk pemisah ribuan
+
   String _selectedCity = "Pilih Kota";
-  List<String> cities = [
-    "Surabaya",
-    "Malang",
-    "Sidoarjo",
-    "Gresik",
-    "Banyuwangi"
-  ];
-  List<String> selectedCategories = []; // Menyimpan kategori yang dipilih
+  List<String> cities = [];
+  List<String> selectedCategories = [];
   List<TextEditingController> nameControllers = [TextEditingController()];
   List<TextEditingController> amountControllers = [TextEditingController()];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCitiesFromFirestore();
+
+    // Tambahkan listener untuk memformat input uang saku
+    _uangSakuController.addListener(_formatUangSaku);
+  }
+
+  void _formatUangSaku() {
+    String currentText = _uangSakuController.text;
+
+    // Hilangkan titik atau koma dari string
+    String numericString = currentText.replaceAll('.', '').replaceAll(',', '');
+
+    if (numericString.isEmpty) return;
+
+    int? number = int.tryParse(numericString);
+    if (number == null) return;
+
+    String formatted = formatter.format(number);
+
+    // Update controller hanya jika hasil format beda dengan teks saat ini
+    if (formatted != currentText) {
+      _uangSakuController.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+      );
+    }
+  }
+
+  Future<void> _loadCitiesFromFirestore() async {
+    print("Mulai load kota...");
+    try {
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('kota').get();
+
+      List<String> loadedCities =
+          snapshot.docs.map((doc) => doc['nama'] as String).toList();
+
+      print('Kota berhasil diambil: $loadedCities');
+
+      setState(() {
+        cities = loadedCities;
+      });
+    } catch (e) {
+      print('Gagal mengambil kota: $e');
+    }
+  }
 
   void _selectCity() {
     showModalBottomSheet(
       context: context,
       builder: (context) {
+        if (cities.isEmpty) {
+          return Container(
+            height: 200,
+            alignment: Alignment.center,
+            child: CircularProgressIndicator(),
+          );
+        }
         return ListView.builder(
           itemCount: cities.length,
           itemBuilder: (context, index) {
@@ -67,8 +123,6 @@ class _BuatBaruState extends State<BuatBaru> {
                         style: TextStyle(
                             fontSize: 16, fontStyle: FontStyle.italic)),
                     SizedBox(height: 10),
-
-                    // List Input Pengeluaran
                     Column(
                       children: List.generate(nameControllers.length, (index) {
                         return Padding(
@@ -91,7 +145,6 @@ class _BuatBaruState extends State<BuatBaru> {
                                     border: InputBorder.none,
                                   ),
                                 ),
-                                // Input Nominal
                                 SizedBox(
                                   width: 80,
                                   child: TextField(
@@ -114,10 +167,7 @@ class _BuatBaruState extends State<BuatBaru> {
                         );
                       }),
                     ),
-
                     SizedBox(height: 10),
-
-                    // Tombol Tambah +
                     IconButton(
                       onPressed: () {
                         setStateModal(() {
@@ -128,10 +178,7 @@ class _BuatBaruState extends State<BuatBaru> {
                       icon: Icon(Icons.add_circle,
                           color: Color.fromARGB(255, 105, 147, 245), size: 40),
                     ),
-
                     SizedBox(height: 10),
-
-                    // Tombol Submit
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 105, 147, 245),
@@ -142,7 +189,6 @@ class _BuatBaruState extends State<BuatBaru> {
                         minimumSize: Size(double.infinity, 50),
                       ),
                       onPressed: () {
-                        // Konversi tambahan pengeluaran ke Map<String, int>
                         Map<String, int> tambahan = {};
                         for (int i = 0; i < nameControllers.length; i++) {
                           String nama = nameControllers[i].text;
@@ -157,8 +203,9 @@ class _BuatBaruState extends State<BuatBaru> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => Cek(
-                              uangSaku:
-                                  int.tryParse(_uangSakuController.text) ?? 0,
+                              uangSaku: int.tryParse(_uangSakuController.text
+                                      .replaceAll('.', '')) ??
+                                  0,
                               selectedCity: _selectedCity,
                               selectedCategories: selectedCategories,
                               tambahanPengeluaran: tambahan,
@@ -179,6 +226,19 @@ class _BuatBaruState extends State<BuatBaru> {
   }
 
   @override
+  void dispose() {
+    _uangSakuController.removeListener(_formatUangSaku);
+    _uangSakuController.dispose();
+    for (var controller in nameControllers) {
+      controller.dispose();
+    }
+    for (var controller in amountControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 105, 147, 245),
@@ -192,115 +252,103 @@ class _BuatBaruState extends State<BuatBaru> {
         ),
         title: Text("Buat Baru", style: TextStyle(color: Colors.white)),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 20),
-
-          // Input Uang Saku
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              width: double.infinity,
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.black),
-              ),
-              alignment: Alignment.center,
-              child: TextField(
-                controller: _uangSakuController,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Masukkan Uang Saku",
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-
-          // Tombol Pilih Kota
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 105, 147, 245),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                width: double.infinity,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: Colors.black),
+                  border: Border.all(color: Colors.black),
                 ),
-                minimumSize: Size(double.infinity, 70),
-              ),
-              onPressed: _selectCity,
-              child: Text(_selectedCity, style: TextStyle(fontSize: 22)),
-            ),
-          ),
-          SizedBox(height: 20),
-
-          // Kategori Pengeluaran (3 di atas, 2 di bawah)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                // Baris pertama (3 kotak)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildCategoryBox("Makan", Icons.restaurant),
-                    _buildCategoryBox("Tempat Tinggal", Icons.home),
-                    _buildCategoryBox("Internet", Icons.wifi),
-                  ],
+                alignment: Alignment.center,
+                child: TextField(
+                  controller: _uangSakuController,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Masukkan Uang Saku",
+                  ),
                 ),
-                SizedBox(height: 10),
-
-                // Baris kedua (2 kotak)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildCategoryBox("Hiburan", Icons.mic),
-                    _buildCategoryBox("Dana Darurat", Icons.savings),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(height: 20),
-
-          // Tombol Lainnya
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
               ),
             ),
-            onPressed: _showAddExpenseDialog,
-            child: Text("Lainnya"),
-          ),
-        ],
+            SizedBox(height: 10),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 105, 147, 245),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.black),
+                  ),
+                  minimumSize: Size(double.infinity, 70),
+                ),
+                onPressed: _selectCity,
+                child: Text(_selectedCity, style: TextStyle(fontSize: 22)),
+              ),
+            ),
+            SizedBox(height: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildCategoryBox("Makan", Icons.restaurant),
+                      _buildCategoryBox("Tempat Tinggal", Icons.home),
+                      _buildCategoryBox("Internet", Icons.wifi),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildCategoryBox("Hiburan", Icons.mic),
+                      _buildCategoryBox("Dana Darurat", Icons.savings),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              onPressed: _showAddExpenseDialog,
+              child: Text("Lainnya"),
+            ),
+            SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
 
-  // Widget untuk Kategori dalam Kotak
   Widget _buildCategoryBox(String label, IconData icon) {
-    bool isSelected =
-        selectedCategories.contains(label); // Memeriksa apakah kategori dipilih
+    bool isSelected = selectedCategories.contains(label);
     return GestureDetector(
       onTap: () {
         setState(() {
           if (isSelected) {
-            selectedCategories
-                .remove(label); // Menghapus kategori jika sudah dipilih
+            selectedCategories.remove(label);
           } else {
-            selectedCategories.add(label); // Menambahkan kategori yang dipilih
+            selectedCategories.add(label);
           }
         });
       },
@@ -310,20 +358,22 @@ class _BuatBaruState extends State<BuatBaru> {
         margin: EdgeInsets.symmetric(vertical: 5),
         decoration: BoxDecoration(
           color: isSelected ? Color.fromARGB(255, 105, 147, 245) : Colors.white,
-          border: Border.all(color: Colors.black, width: 2),
+          border: Border.all(color: Colors.black),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon,
-                size: 30, color: isSelected ? Colors.white : Colors.black),
-            SizedBox(height: 5),
-            Text(label,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 14,
-                    color: isSelected ? Colors.white : Colors.black)),
+                size: 50, color: isSelected ? Colors.white : Colors.black),
+            SizedBox(height: 10),
+            Text(
+              label,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? Colors.white : Colors.black),
+            ),
           ],
         ),
       ),

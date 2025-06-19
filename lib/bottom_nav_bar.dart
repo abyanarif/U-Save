@@ -3,6 +3,7 @@ import 'Literasi.dart';
 import 'budgeting.dart';
 import 'mutasiTransaksi.dart';
 import 'informasiAkun.dart';
+import 'Cek.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
