@@ -1,0 +1,2 @@
+C:/U-Save-Mobile/U-Save/android/app/.cxx/RelWithDebInfo/4w58555l/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/U-Save-Mobile/U-Save/android/app/.cxx/RelWithDebInfo/4w58555l/armeabi-v7a/CMakeFiles/rebuild_cache.dir

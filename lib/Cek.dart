@@ -240,6 +240,7 @@ class _CekState extends State<Cek> {
                           title: entry.key,
                           amount: entry.value,
                           formatter: formatter,
+                          selectedCity: widget.selectedCity,
                         ))
                     .toList(),
               ),

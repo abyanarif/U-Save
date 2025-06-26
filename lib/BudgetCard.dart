@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'budgeting.dart';
-import 'Cek.dart';
 
 class BudgetCard extends StatelessWidget {
   final String title;
   final int amount;
   final NumberFormat formatter;
+  final String selectedCity; // Tambahan: nama kota yang dipilih
 
   const BudgetCard({
     super.key,
     required this.title,
     required this.amount,
     required this.formatter,
+    required this.selectedCity,
   });
 
   @override
@@ -46,7 +46,8 @@ class BudgetCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 22),
               ),
-            )
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),

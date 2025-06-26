@@ -1,6 +1,7 @@
 import 'package:aplikasi2/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class InformasiAkun extends StatefulWidget {
   const InformasiAkun({super.key});
@@ -13,7 +14,10 @@ class _InformasiAkunState extends State<InformasiAkun> {
   bool _isEditingUniversitas = false;
   String _universitas = 'Universitas';
   late final TextEditingController _universitasController;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   bool _isLoggingOut = false;
   User? _user;
 
@@ -22,6 +26,7 @@ class _InformasiAkunState extends State<InformasiAkun> {
     super.initState();
     _universitasController = TextEditingController();
     _user = _auth.currentUser;
+    _loadUniversitas();
   }
 
   @override
@@ -30,12 +35,22 @@ class _InformasiAkunState extends State<InformasiAkun> {
     super.dispose();
   }
 
+  Future<void> _loadUniversitas() async {
+    if (_user != null) {
+      final doc = await _firestore.collection('users').doc(_user!.uid).get();
+      if (doc.exists && doc.data()?['universitas'] != null) {
+        setState(() {
+          _universitas = doc.data()!['universitas'];
+        });
+      }
+    }
+  }
+
   Future<void> _logout() async {
     setState(() => _isLoggingOut = true);
     try {
       await _auth.signOut();
       if (mounted) {
-
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const Login()),
           (route) => false,
@@ -69,22 +84,36 @@ class _InformasiAkunState extends State<InformasiAkun> {
             onPressed: _logout,
             child: _isLoggingOut
                 ? const CircularProgressIndicator()
-                : const Text(
-                    'Logout',
-                    style: TextStyle(color: Colors.red),
-                  ),
+                : const Text('Logout', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
 
-  void _saveUniversitas() {
-    if (_universitasController.text.trim().length >= 3) {
-      setState(() {
-        _universitas = _universitasController.text.trim();
-        _isEditingUniversitas = false;
-      });
+  void _saveUniversitas() async {
+    final user = _auth.currentUser;
+    final universitasBaru = _universitasController.text.trim();
+
+    if (universitasBaru.length >= 3 && user != null) {
+      try {
+        await _firestore.collection('users').doc(user.uid).update({
+          'universitas': universitasBaru,
+        });
+
+        setState(() {
+          _universitas = universitasBaru;
+          _isEditingUniversitas = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Universitas berhasil disimpan')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menyimpan data: $e')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Masukkan nama universitas')),
@@ -110,7 +139,6 @@ class _InformasiAkunState extends State<InformasiAkun> {
             children: [
               const SizedBox(height: 20),
 
-              // Display Username
               FieldProfile(
                 icon: Icons.person,
                 text: displayName,
@@ -119,7 +147,6 @@ class _InformasiAkunState extends State<InformasiAkun> {
 
               const SizedBox(height: 15),
 
-              // Email
               FieldProfile(
                 icon: Icons.email,
                 text: email,
@@ -281,17 +308,14 @@ class FieldProfile extends StatelessWidget {
   String _maskSensitiveInfo(String text) {
     if (text.isEmpty) return text;
     if (text.contains('@')) {
-      // Mask email
       final parts = text.split('@');
-      if (parts.length != 2) return text;
       final name = parts[0];
       final domain = parts[1];
-      if (name.isEmpty) return text;
       return '${name[0]}***${name.length > 1 ? name.substring(name.length - 1) : ''}@$domain';
     } else {
-      // Mask username
-      if (text.length <= 2) return '${text[0]}***';
-      return '${text[0]}***${text.substring(text.length - 2)}';
+      return text.length <= 2
+          ? '${text[0]}***'
+          : '${text[0]}***${text.substring(text.length - 2)}';
     }
   }
 }

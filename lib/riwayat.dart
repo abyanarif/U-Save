@@ -124,6 +124,7 @@ class _RiwayatTerakhirState extends State<RiwayatTerakhir> {
                           title: entry.key,
                           amount: entry.value,
                           formatter: formatter,
+                          selectedCity: '$city',
                         ),
                       ),
                     ],
